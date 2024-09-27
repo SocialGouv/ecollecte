@@ -6,6 +6,11 @@ Ce format se base sur [keep a changelog](https://keepachangelog.com/fr/1.0.0/), 
 projet adhère à [la Gestion sémantique de version](https://semver.org/lang/fr/spec/v2.0.0.html).
 
 ## [En cours]
+## [3.0.9] - 2024-09-27
+### Modifications
+- CP-96 : Modifier la phrase d'exemple au dessus du champ de présentation du questionnaire
+- CP-101 : Pages communication : ouvrir le lien vers l'instance de démo dans une nouvelle fenêtre
+- CP-109 : Instance Démo : publier les bons codes de connexion
 ## [3.0.8] - 2024-07-08
 ### Modifications
 - CP-165 : La fonctionnalité Action renvoie un code erreur
