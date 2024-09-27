@@ -1,116 +1,123 @@
 {% extends "presentation/accueil.html" %}
 {% load static %}
 {% block site_title %}
-  <title>Présentation | collecte-pro</title>
+<title>Présentation | collecte-pro</title>
 {% endblock site_title %}
 
 {% block page_main_container %}
-          <section>
-            <div class="presentation">
-              <div class="text left">
-                <h1>Découvrir notre solution</h1>
-                <p>
-                  <ul>
-                    <li class="icon plus">Structurer la collecte de documents</li>
-                    <li class="icon fleche">Simplifier la transmission des réponses</li>
-                    <li class="icon fichier">Automatiser le classement et le renommage</li>
-                    <li class="icon loupe">Faciliter le pointage des fichiers</li>
-                  </ul>
-                </p>
-              </div>
-              <div class="illustration right">
-                <img src="/static/img/donnees-ordinateur-portable.jpg" />
-              </div>
-              <div class="demo">
-                <a href="/presentation/demo" class="btn btn-primary btn-block btn-demo">Tester collecte-pro</a>
-              </div>
-            </div>
-          </section>
+<section>
+  <div class="presentation">
+    <div class="text left">
+      <h1>Découvrir notre solution</h1>
+      <p>
+      <ul>
+        <li class="icon plus">Structurer la collecte de documents</li>
+        <li class="icon fleche">Simplifier la transmission des réponses</li>
+        <li class="icon fichier">Automatiser le classement et le renommage</li>
+        <li class="icon loupe">Faciliter le pointage des fichiers</li>
+      </ul>
+      </p>
+    </div>
+    <div class="illustration right">
+      <img src="/static/img/donnees-ordinateur-portable.jpg" />
+    </div>
+    <div class="demo">
+      <a href="/presentation/demo" class="btn btn-primary btn-block btn-demo" target="_blank">Tester collecte-pro</a>
+    </div>
+  </div>
+</section>
 
-          <section>
-            <div class="presentation">
-              <div class="illustration left">
-                <img src="/static/img/dossiers.jpg" />
-              </div>
-              <div class="text right">
-                <h1>Notre cible</h1>
-                <p>collecte-pro est un service conçu par l'État pour toute administration réalisant des évaluations, contrôles,
-                  inspections ou audits</p>
-              </div>
-            </div>
-          </section>
+<section>
+  <div class="presentation">
+    <div class="illustration left">
+      <img src="/static/img/dossiers.jpg" />
+    </div>
+    <div class="text right">
+      <h1>Notre cible</h1>
+      <p>collecte-pro est un service conçu par l'État pour toute administration réalisant des évaluations, contrôles,
+        inspections ou audits</p>
+    </div>
+  </div>
+</section>
 
-          <section>
-            <div class="presentation">
-              <div class="text">
-                <h1>Les avis</h1>
-              </div>
-              <div class="row">
-                <p class="advice text-center">
-                  <img src="/static/img/franck.png" class="picture" />
-                  <span class="name">Franck B.</span>
-                  <span class="stars"><img src="/static/img/stars5.svg" /></span>
-                  <span class="quote">"Prise en main en une heure et des réponses obtenues dans l'heure suivante."</span>
-                </p>
-                <p class="advice text-center">
-                  <img src="/static/img/sandra.png" class="picture" />
-                  <span class="name">Sandra A.</span>
-                  <span class="stars"><img src="/static/img/stars4.svg" /></span>
-                  <span class="quote">"Je retrouve mon organisation, la sélection des fichiers est un atout supplémentaire."</span>
-                </p>
-                <p class="advice text-center">
-                  <img src="/static/img/mathilde.png" class="picture" />
-                  <span class="name">Mathilde T.</span>
-                  <span class="stars"><img src="/static/img/stars5.svg" /></span>
-                  <span class="quote">"Un outil indispensable lorsque l'on doit collecter des quantités importantes de documents."</span>
-                </p>
-              </div>
-            </div>
-          </section>
+<section>
+  <div class="presentation">
+    <div class="text">
+      <h1>Les avis</h1>
+    </div>
+    <div class="row">
+      <p class="advice text-center">
+        <img src="/static/img/franck.png" class="picture" />
+        <span class="name">Franck B.</span>
+        <span class="stars"><img src="/static/img/stars5.svg" /></span>
+        <span class="quote">"Prise en main en une heure et des réponses obtenues dans l'heure suivante."</span>
+      </p>
+      <p class="advice text-center">
+        <img src="/static/img/sandra.png" class="picture" />
+        <span class="name">Sandra A.</span>
+        <span class="stars"><img src="/static/img/stars4.svg" /></span>
+        <span class="quote">"Je retrouve mon organisation, la sélection des fichiers est un atout
+          supplémentaire."</span>
+      </p>
+      <p class="advice text-center">
+        <img src="/static/img/mathilde.png" class="picture" />
+        <span class="name">Mathilde T.</span>
+        <span class="stars"><img src="/static/img/stars5.svg" /></span>
+        <span class="quote">"Un outil indispensable lorsque l'on doit collecter des quantités importantes de
+          documents."</span>
+      </p>
+    </div>
+  </div>
+</section>
 
-          <section>
-            <div class="presentation">
-              <div class="text left">
-                <h1>Vidéos</h1>
-                <iframe id="video" width="480px" height="320px" src="https://www.youtube.com/embed/76XCQO9J3k0" frameborder="0" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
-              </div>
-              <div class="illustration right">
-                <p>
-                  <ol>
-                    <li><a href="#" onclick="return play('76XCQO9J3k0');">Présentation</a></li>
-                    <li><a href="#" onclick="return play('LdSus0uAe3w');">Introduction et connexion</a></li>
-                    <li><a href="#" onclick="return play('oaYiAX7v_m8');">Demandeur : Créer un espace de dépôt</a></li>
-                    <li><a href="#" onclick="return play('1dcZFx3quKo');">Demandeur : Créer un questionnaire</a></li>
-                    <li><a href="#" onclick="return play('gaTCAgTsAg0');">Demandeur : Dupliquer un espace de dépôt</a></li>
-                    <li><a href="#" onclick="return play('DOvRU3Jh5rY');">Répondant : Déposer des réponses</a></li>
-                    <li><a href="#" onclick="return play('sJPGV9Dcmgg');">Répondant : Voir et exporter les réponses</a></li>
-                    <li><a href="#" onclick="return play('3cM2yDOSHxE');">Répondant : Exporter la liste des réponses</a></li>
-                  </ol>
-                </p>
-              </div>
-            </div>
-          </section>
+<section>
+  <div class="presentation">
+    <div class="text left">
+      <h1>Vidéos</h1>
+      <iframe id="video" width="480px" height="320px" src="https://www.youtube.com/embed/76XCQO9J3k0" frameborder="0"
+        allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="illustration right">
+      <p>
+      <ol>
+        <li><a href="#" onclick="return play('76XCQO9J3k0');">Présentation</a></li>
+        <li><a href="#" onclick="return play('LdSus0uAe3w');">Introduction et connexion</a></li>
+        <li><a href="#" onclick="return play('oaYiAX7v_m8');">Demandeur : Créer un espace de dépôt</a></li>
+        <li><a href="#" onclick="return play('1dcZFx3quKo');">Demandeur : Créer un questionnaire</a></li>
+        <li><a href="#" onclick="return play('gaTCAgTsAg0');">Demandeur : Dupliquer un espace de dépôt</a></li>
+        <li><a href="#" onclick="return play('DOvRU3Jh5rY');">Répondant : Déposer des réponses</a></li>
+        <li><a href="#" onclick="return play('sJPGV9Dcmgg');">Répondant : Voir et exporter les réponses</a></li>
+        <li><a href="#" onclick="return play('3cM2yDOSHxE');">Répondant : Exporter la liste des réponses</a></li>
+      </ol>
+      </p>
+    </div>
+  </div>
+</section>
 
-          <section>
-            <div class="presentation">
-              <div class="text left">
-                <h1>Tutoriels</h1>
-                <p>
-                  <ul>
-                    <li><span class="tutoriel">Tutoriel Demandeur</span><a href="https://osmose.numerique.gouv.fr/front/publicLink/publicDownload.jsp?id=0947c75d-c25a-4525-8daf-ea49bc2ae160e6cf3dcd-eeac-489c-bc82-f3c8d9d58900" class="btn btn-primary">Télécharger ici</a></li>
-                    <li><span class="tutoriel">Tutoriel Répondant</span><a href="https://osmose.numerique.gouv.fr/front/publicLink/publicDownload.jsp?id=620188ed-7b8e-4115-9f5a-ae4db672f95652934f41-5a81-4d13-99d8-42394eab0cd6" class="btn btn-primary">Télécharger ici</a></li>
-                  </ul>
-                </p>
-            </div>
-          </section>
+<section>
+  <div class="presentation">
+    <div class="text left">
+      <h1>Tutoriels</h1>
+      <p>
+      <ul>
+        <li><span class="tutoriel">Tutoriel Demandeur</span><a
+            href="https://osmose.numerique.gouv.fr/front/publicLink/publicDownload.jsp?id=0947c75d-c25a-4525-8daf-ea49bc2ae160e6cf3dcd-eeac-489c-bc82-f3c8d9d58900"
+            class="btn btn-primary">Télécharger ici</a></li>
+        <li><span class="tutoriel">Tutoriel Répondant</span><a
+            href="https://osmose.numerique.gouv.fr/front/publicLink/publicDownload.jsp?id=620188ed-7b8e-4115-9f5a-ae4db672f95652934f41-5a81-4d13-99d8-42394eab0cd6"
+            class="btn btn-primary">Télécharger ici</a></li>
+      </ul>
+      </p>
+    </div>
+</section>
 
 
 <script>
-function play(vid) {
+  function play(vid) {
     video = document.getElementById('video');
     video.src = "https://www.youtube.com/embed/" + vid;
     return false;
-}
+  }
 </script>
 
 {% endblock page_main_container %}
