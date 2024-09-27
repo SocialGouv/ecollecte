@@ -15,7 +15,7 @@
               Exemple :
               <strong>"Présentation générale"</strong>
               ou
-              <strong>"Suite à la réunion du 7 Mars 2019"</strong>. 255 caractères maximum.
+              <strong>"Suite à la réunion du ..."</strong>. 255 caractères maximum.
             </span>
             <input id="questionnaire_title"
                    type="text"
