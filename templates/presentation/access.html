@@ -3,41 +3,43 @@
 {% load email_obfuscator %}
 {% load parametres_tags %}
 {% block site_title %}
-  <title>Tester collecte-pro | collecte-pro</title>
+<title>Tester collecte-pro | collecte-pro</title>
 {% endblock site_title %}
 
 {% block page_main_container %}
-          <section>
-            <div class="presentation">
-              <div class="text left">
-                <h1>Accéder à collecte-pro</h1>
-                <p>
-                Votre demande a bien été prise en compte.</a>
-                </p>
-                {%if demandeur %}
-                <p>
-                Vous pouvez vous rendre sur le site : <a href="https://demo.collecte-pro.gouv.fr">https://demo.collecte-pro.gouv.fr</a>
-                </p>
-                <p>
-                Pour utiliser la démo en tant que Demandeur :
-                <ul>
-                    <li>Identifiant : {{ demandeur.identifiant }}</li>
-                    <li>Mot de passe : {{ demandeur.mot_de_passe }}</li>
-                </ul>
-                </p>
-                <p>
-                Pour utiliser la démo en tant que Répondant :
-                <ul>
-                    <li>Identifiant : {{ repondant.identifiant }}</li>
-                    <li>Mot de passe : {{ repondant.mot_de_passe }}</li>
-                </ul>
-                </p>
-                {%endif%}
-                <p>
-                {% get_support_email_item as support_email %}
-                Pour toute question, vous pouvez également {{ support_email.url|obfuscate_mailto:"contacter l'équipe collecte-pro" }}.
-                </p>
-              </div>
-            </div>
-          </section>
+<section>
+  <div class="presentation">
+    <div class="text left">
+      <h1>Accéder à collecte-pro</h1>
+      <p>
+        Votre demande a bien été prise en compte.</a>
+      </p>
+      {%if demandeur %}
+      <p>
+        Vous pouvez vous rendre sur le site : <a href="https://demo.collecte-pro.gouv.fr"
+          target="_blank">https://demo.collecte-pro.gouv.fr</a>
+      </p>
+      <p>
+        Pour utiliser la démo en tant que Demandeur :
+      <ul>
+        <li>Identifiant : {{ demandeur.identifiant }}</li>
+        <li>Mot de passe : {{ demandeur.mot_de_passe }}</li>
+      </ul>
+      </p>
+      <p>
+        Pour utiliser la démo en tant que Répondant :
+      <ul>
+        <li>Identifiant : {{ repondant.identifiant }}</li>
+        <li>Mot de passe : {{ repondant.mot_de_passe }}</li>
+      </ul>
+      </p>
+      {%endif%}
+      <p>
+        {% get_support_email_item as support_email %}
+        Pour toute question, vous pouvez également {{ support_email.url|obfuscate_mailto:"contacter l'équipe
+        collecte-pro" }}.
+      </p>
+    </div>
+  </div>
+</section>
 {% endblock page_main_container %}
