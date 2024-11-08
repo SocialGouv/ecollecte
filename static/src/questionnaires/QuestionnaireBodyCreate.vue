@@ -22,7 +22,7 @@
               </div>
               <div class="card-header border-0 pb-0 pt-0">
                 <label v-bind:for="'theme' + (themeIndex + 1)" class="form-label-h3 mr-1">
-                  <h3 class="card-title">{{themeIndex + 1}}.</h3>
+                  <h2 class="card-title">{{themeIndex + 1}}.</h2>
                 </label>
                 <input class="form-control form-control-h3"
                        title="Ecrivez un thème ici"
