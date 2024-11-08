@@ -11,10 +11,10 @@
     <div class="card-body">
       <div class="card">
         <div class="card-header justify-content-between">
-          <h3 class="card-title">
+          <h2 class="card-title">
             <span class="fa fa-university mr-2" aria-hidden="true"></span>
             <strong>Équipe d'instruction</strong>
-          </h3>
+          </h2>
           <button v-if="accessType === 'demandeur'"
                   data-toggle="modal"
                   data-target="#addUserModal"
@@ -31,10 +31,10 @@
 
       <div class="card mb-0">
         <div class="card-header justify-content-between">
-          <h3 class="card-title">
+          <h2 class="card-title">
             <span class="fa fa-building mr-2" aria-hidden="true"></span>
             <strong>Organisme interrogé</strong>
-          </h3>
+          </h2>
           <button v-if="accessType === 'demandeur'"
                   data-toggle="modal"
                   data-target="#addUserModal"

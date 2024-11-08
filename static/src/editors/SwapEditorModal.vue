@@ -48,7 +48,7 @@
 
               <div class="card">
                 <div class="card-header justify-content-between">
-                  <h3 class="card-title"><span class="fa fa-university mr-2" aria-hidden="true"></span><strong>Équipe d'instruction</strong></h3>
+                  <h2 class="card-title"><span class="fa fa-university mr-2" aria-hidden="true"></span><strong>Équipe d'instruction</strong></h2>
                 </div>
 
                 <editor-list :users="inspectorUsers()"

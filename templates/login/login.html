@@ -3,7 +3,7 @@
 {% load email_obfuscator %}
 {% load parametres_tags %}
 {% block site_title %}
-  <title>Connexion | collecte-pro</title>
+  <title>Connexion | e-collecte</title>
 {% endblock site_title %}
 {% block content %}
 <div id="page" class="page white">
@@ -22,9 +22,9 @@
           <div class="mb-5 text-center trebuchet-style">
             <span>collecte-pro</span>
           </div>
-          <h3 class="mb-lg-5 text-center">
+          <h2 class="mb-lg-5 text-center">
             La plateforme d'échange de documents <br/> durant les contrôles, audits, évaluations et inspections
-          </h3>
+          </h2>
           <div class="mt-5 mt-md-5 mt-lg-7 mt-xl-8 mb-5 mb-md-5 mb-lg-7 mb-xl-8 d-flex flex-column justify-content-center align-items-center">
             {% if user.is_authenticated %}
               <div class="alert alert-info text-center" role="alert">
