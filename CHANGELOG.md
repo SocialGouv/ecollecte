@@ -6,6 +6,9 @@ Ce format se base sur [keep a changelog](https://keepachangelog.com/fr/1.0.0/), 
 projet adhère à [la Gestion sémantique de version](https://semver.org/lang/fr/spec/v2.0.0.html).
 
 ## [En cours]
+## [3.0.11] - 2024-11-13
+### Modifications
+- CP-109 : Anomalie d'adresse email
 ## [3.0.10] - 2024-11-08
 ### Modifications
 - CP-68 : Contre Audit RGAA V1
