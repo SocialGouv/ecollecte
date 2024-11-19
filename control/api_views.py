@@ -63,7 +63,16 @@ class ControlViewSet(mixins.CreateModelMixin,
         action_details = {
             'sender': self.request.user,
             'verb': verb,
-            'action_object': control,
+            'action_object': control
+        }
+        action.send(**action_details)
+        
+    def add_log_duplicate_entry(self, controlSource, controlDestination, verb):
+        action_details = {
+            'sender': self.request.user,
+            'verb': verb,
+            'action_object': controlDestination,
+            'target': controlSource
         }
         action.send(**action_details)
 
@@ -74,9 +83,16 @@ class ControlViewSet(mixins.CreateModelMixin,
         profile = request.user.profile
         # The current user is automatically added to the created control
         Access.objects.create(access_type=access_type, userprofile=profile, control=control)
-        self.add_log_entry(control=control, verb='created control')
+        if request.data.__contains__('idCtlSource') :
+            print ("Duplication : ", request.data['idCtlSource'])
+            controlSource = Control.objects.active().get(id=request.data['idCtlSource'])
+            self.add_log_duplicate_entry( controlSource=controlSource, controlDestination=control, verb='created control')
+        else:
+            print ("Creation")
+            self.add_log_entry(control=control, verb='created control')
+  
         return response
-
+    
     def update(self, request, *args, **kwargs):
         response = super(ControlViewSet, self).update(request, *args, **kwargs)
         control = self.get_queryset().get(id=response.data['id'])

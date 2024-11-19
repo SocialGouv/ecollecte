@@ -327,9 +327,11 @@ export default Vue.extend({
       const getCreateMethodCtrl = () => axios.post.bind(this, backendUrls.control())
 
       if (this.checkedQuestionnaires.length) {
+        console.log(" idCtlSource ",this.control.id)
         const questionnaires = this.accessibleQuestionnaires
           .filter(aq => this.checkedQuestionnaires.includes(aq.id))
         const ctrl = {
+          idCtlSource:this.control.id,
           title: this.control.title,
           depositing_organization: this.control.depositing_organization,
           reference_code: newRefCode,
