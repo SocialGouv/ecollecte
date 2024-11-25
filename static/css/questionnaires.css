@@ -96,3 +96,80 @@
 .view-button {
     font-size: smaller;
 }
+/* Supprime le scroll horizontal global */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.card,
+.card-header,
+.card-body,
+.form-control,
+textarea,
+input,
+datepicker {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+}
+
+
+.card {
+    margin: 0;
+    padding: 16px;
+
+}
+
+.form-group {
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+
+.wizard-step-graphics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+@media (max-width: 320px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+
+        line-height: 1.4;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+
+    }
+
+    textarea,
+    input {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .form-control {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+
+    .card-body {
+        padding: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+}

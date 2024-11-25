@@ -2,7 +2,11 @@
   <div>
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Etape 2 : Ajouter des questions</h2>
+        <h2 class="card-title">
+          <span data-v-d81dfb="" class="number"></span>
+          <span class="sr-only">En cours de consultation</span>
+          Etape 2 : Ajouter des questions
+        </h2>
       </div>
       <div class="card-body pb-6">
         <info-bar>
@@ -213,6 +217,9 @@
             </div>
           </div>
         </form>
+          <a class="wizard-step-graphics">
+          <span class="sr-only">Étape validée</span>
+        </a>
 
         <move-themes-modal ref="moveThemesModal">
         </move-themes-modal>

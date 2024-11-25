@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button id="AddControlButton" class="btn btn-primary" @click="showModal">
+    <button id="AddControlButton" class="btn btn-primary" @click="showModal" ref="addControlButton">
       <span class="fe fe-plus" aria-hidden="true"></span>
       Ajouter un espace de dépôt
     </button>
@@ -9,6 +9,7 @@
                              cancel-button="Annuler"
                              confirm-button="Créer l'espace de dépôt"
                              title="Créer un nouvel espace de dépôt"
+                             aria-labelledby="dialog1_label"
                              @confirm="createControl"
                              @close="closeModal"
     >
@@ -130,10 +131,15 @@ export default Vue.extend({
     showModal() {
       $(this.$refs.modal.$el).modal('show');
       $(this.$refs.modal.$el).on("hidden.bs.modal", this.closeModal);
-      this.$refs["nom_controle"].focus();
+      this.$nextTick(() => {
+        this.$refs["nom_controle"].focus();
+      });
     },
     closeModal() {
-        $("#AddControlButton").focus();
+      $(this.$refs.modal.$el).modal('hide');
+      this.$nextTick(() => {
+        this.$refs.addControlButton.focus();
+      });
     },
     createControl: function(processingDoneCallback) {
       const payload = {

@@ -1,29 +1,35 @@
 <template>
   <nav class="sidebar" :class="{ collapsed: collapsed }">
     <div v-if="showSidebar">
-      <button id="sidebar-toggle-button" class="btn btn-secondary" @click="toggleCollapse" title="Replier le panneau latéral">
+      <button
+        id="sidebar-toggle-button"
+        class="btn btn-secondary"
+        @click="toggleCollapse"
+        :aria-expanded="!collapsed"
+        aria-controls="sidebar"
+        title="Replier le panneau latéral"
+      >
         <span v-show="!collapsed" class="fa fa-chevron-left"></span>
         <span v-show="collapsed" class="fa fa-chevron-down"></span>
         <span v-show="collapsed">Ouvrir le menu</span>
         <span v-show="!collapsed" class="hidden">Replier le panneau latéral</span>
       </button>
-      <sidebar-menu class="sidebar-body"
-                    id="sidebar"
-                    :menu="menu"
-                    :relative="true"
-                    :hideToggle="true"
-                    :show-one-child="true"
-                    theme="white-theme"
-                    :collapsed="collapsed"
-                    v-if="!collapsed"
-                    role="navigation"
+
+      <sidebar-menu
+        id="sidebar"
+        :class="{ 'd-none': collapsed, 'd-block': !collapsed }"
+        :menu="menu"
+        :relative="true"
+        :hideToggle="true"
+        :show-one-child="true"
+        theme="white-theme"
+        role="navigation"
+        :tabindex="collapsed ? -1 : 0"
+        v-if="!collapsed"
       >
         <template v-slot:header>
-          <div id="sidebar-title"
-               class="card-header flex-row justify-content-center">
-            <h2 class="card-title text-nowrap text-center">
-              Mes espaces de dépôt
-            </h2>
+          <div id="sidebar-title" class="card-header flex-row justify-content-center">
+            <h2 class="card-title text-nowrap text-center">Mes espaces de dépôt</h2>
           </div>
 
           <div v-if="isLoaded && controls.length === 0">
@@ -37,18 +43,15 @@
             </div>
           </div>
 
-          <div v-if="user && user.is_inspector"
-              class="card-header flex-row justify-content-center border-0">
+          <div v-if="user && user.is_inspector" class="card-header flex-row justify-content-center border-0">
             <control-create></control-create>
           </div>
 
-          <div v-if="isLoaded && controls.length === 0"
-              class="ie-margin-for-footer">
+          <div v-if="isLoaded && controls.length === 0" class="ie-margin-for-footer">
             <!-- empty div. Adds margin-bottom to fix a footer bug for IE. -->
           </div>
 
-          <div v-if="!isLoaded && !hasError"
-              class="sidebar-load-message card-header border-0 mt-4 mb-4">
+          <div v-if="!isLoaded && !hasError" class="sidebar-load-message card-header border-0 mt-4 mb-4">
             <div class="loader mr-2"></div>
             En attente de la liste d'espaces...
           </div>
@@ -62,18 +65,18 @@
             </div>
             <div class="mt-2">
               <p>Vous pouvez essayer de recharger la page
-              <template v-if="!errorEmailLink">
-                .
-              </template>
-              <template v-else>
-                , ou
-                <a :href="'mailto:' + errorEmailLink + JSON.stringify(error)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  cliquez ici pour nous contacter
-                </a>.</p>
-              </template>
+                <template v-if="!errorEmailLink">.</template>
+                <template v-else>
+                  , ou
+                  <a
+                    :href="'mailto:' + errorEmailLink + JSON.stringify(error)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    cliquez ici pour nous contacter
+                  </a>.
+                </template>
+              </p>
             </div>
           </error-bar>
         </template>
@@ -81,7 +84,6 @@
     </div>
   </nav>
 </template>
-
 <script>
 import backend from '../utils/backend.js'
 import ControlCreate from '../controls/ControlCreate'
