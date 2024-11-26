@@ -1,6 +1,8 @@
 <template>
   <div>
-    <button id="AddControlButton" class="btn btn-primary" @click="showModal" ref="addControlButton">
+    <button id="AddControlButton" class="btn btn-primary" @click="showModal" ref="addControlButton"
+            aria-expanded="false"
+            aria-controls="modal">
       <span class="fe fe-plus" aria-hidden="true"></span>
       Ajouter un espace de dépôt
     </button>
@@ -116,6 +118,7 @@ export default Vue.extend({
       organization: '',
       reference_code_suffix: '',
       year: new Date().getFullYear(),
+      isModalOpen: false, 
     }
   },
   computed: {
@@ -129,6 +132,8 @@ export default Vue.extend({
   },
   methods: {
     showModal() {
+      this.isModalOpen = true;
+      this.$refs.addControlButton.setAttribute('aria-expanded', 'true');
       $(this.$refs.modal.$el).modal('show');
       $(this.$refs.modal.$el).on("hidden.bs.modal", this.closeModal);
       this.$nextTick(() => {
@@ -136,6 +141,8 @@ export default Vue.extend({
       });
     },
     closeModal() {
+      this.isModalOpen = false;
+      this.$refs.addControlButton.setAttribute('aria-expanded', 'false');
       $(this.$refs.modal.$el).modal('hide');
       this.$nextTick(() => {
         this.$refs.addControlButton.focus();

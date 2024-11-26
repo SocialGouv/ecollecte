@@ -1,32 +1,31 @@
 <template>
-  <nav class="sidebar" :class="{ collapsed: collapsed }">
-    <div v-if="showSidebar">
-      <button
-        id="sidebar-toggle-button"
-        class="btn btn-secondary"
-        @click="toggleCollapse"
-        :aria-expanded="!collapsed"
-        aria-controls="sidebar"
-        title="Replier le panneau latéral"
-      >
-        <span v-show="!collapsed" class="fa fa-chevron-left"></span>
-        <span v-show="collapsed" class="fa fa-chevron-down"></span>
-        <span v-show="collapsed">Ouvrir le menu</span>
-        <span v-show="!collapsed" class="hidden">Replier le panneau latéral</span>
-      </button>
+ <nav class="sidebar" :class="{ collapsed: collapsed }" role="navigation">
+  <button
+    id="sidebar-toggle-button"
+    class="btn btn-secondary"
+    @click="toggleCollapse"
+    :aria-expanded="!collapsed"
+    aria-controls="sidebar"
+    :aria-label="collapsed ? 'Ouvrir le panneau latéral' : 'Replier le panneau latéral'"
+  >
+    <span v-show="!collapsed" class="fa fa-chevron-left"></span>
+    <span v-show="collapsed" class="fa fa-chevron-down"></span>
+    <span v-show="collapsed">Ouvrir le menu</span>
+    <span v-show="!collapsed" class="hidden">Replier le panneau latéral</span>
+  </button>
 
-      <sidebar-menu
-        id="sidebar"
-        :class="{ 'd-none': collapsed, 'd-block': !collapsed }"
-        :menu="menu"
-        :relative="true"
-        :hideToggle="true"
-        :show-one-child="true"
-        theme="white-theme"
-        role="navigation"
-        :tabindex="collapsed ? -1 : 0"
-        v-if="!collapsed"
-      >
+  <div 
+    id="sidebar"
+    v-show="!collapsed"
+    :aria-hidden="collapsed ? 'true' : 'false'"
+  >
+    <sidebar-menu
+      :menu="menu"
+      :relative="true"
+      :hideToggle="true"
+      :show-one-child="true"
+      theme="white-theme"
+    >
         <template v-slot:header>
           <div id="sidebar-title" class="card-header flex-row justify-content-center">
             <h2 class="card-title text-nowrap text-center">Mes espaces de dépôt</h2>
