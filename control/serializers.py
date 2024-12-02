@@ -96,7 +96,7 @@ class ControlSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Control
-        fields = ('id', 'title', 'depositing_organization', 'reference_code', 'questionnaires')
+        fields = ('id', 'title', 'depositing_organization', 'reference_code', 'questionnaires', 'is_model')
 
 
 class ControlSerializerWithoutDraft(ControlSerializer):
@@ -130,12 +130,12 @@ class ControlFilteredSerializer(ControlSerializer):
 class ControlUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Control
-        fields = ('id', 'title', 'depositing_organization')
+        fields = ('id', 'title', 'depositing_organization', 'is_model')
 
 class ControlListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Control
-        fields = ('id', 'title', 'depositing_organization', 'reference_code')
+        fields = ('id', 'title', 'depositing_organization', 'reference_code', 'is_model')
 
 class QuestionUpdateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
@@ -185,4 +185,4 @@ class ControlDetailControlSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Control
-        fields = ('id', 'title', 'depositing_organization', 'reference_code', 'questionnaires')
+        fields = ('id', 'title', 'depositing_organization', 'reference_code', 'questionnaires', 'is_model')

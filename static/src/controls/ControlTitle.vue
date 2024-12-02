@@ -116,6 +116,12 @@
                 <input id="procedure" type="text" class="form-control" v-model="title" required aria-labelledby="title-label" maxlength="255">
               </div>
             </div>
+            <div class="form-group form-check">
+              <input id="is-model" type="checkbox" class="form-check-input" v-model="isModel">
+              <label class="form-check-label" for="is-model">
+                Marquer comme modèle
+              </label>
+            </div>
           </div>
           <div class="text-right">
             <button @click="cancel"
@@ -159,6 +165,12 @@
             </div>
             <div class="card-title">{{ getAccessTypeLibelle() }}</div>
           </div>
+          <div v-if="accessType === 'demandeur' && isModel" class="mb-3">
+            <div class="text-success font-italic">
+              <span class="fa fa-check mr-2" aria-hidden="true"></span>
+              Marqué comme modèle
+            </div>
+          </div>
         </div>
         <div v-else>
           <div class="page-title">{{ title }}</div>
@@ -196,6 +208,15 @@
                 <span class="fas fa-file-export mr-2" aria-hidden="true"></span>
                 Exporter (.zip)
               </button>
+
+              <!--<button
+                class="dropdown-item"
+                type="button"
+                @click="markAsModel"
+              >
+                <span class="fe fe-star mr-2" aria-hidden="true"></span>
+                Marquer comme modèle
+              </button>-->
               <button class="dropdown-item text-danger"
                       type="button"
                       @click="startControlDeleteFlow"
@@ -245,6 +266,7 @@ export default Vue.extend({
       editMode: false,
       title: '',
       organization: '',
+      isModel: false, 
       errors: '',
       hasErrors: false,
       referenceError: false,
@@ -429,6 +451,32 @@ export default Vue.extend({
       this.checkedQuestionnaires = []
       $(this.$refs.modalexp.$el).modal('show')
     },
+    markAsModel() {
+      /*const payload = {
+        is_model: true 
+      };
+
+     
+      axios.put(backendUrls.control(this.control.id), payload)
+        .then(response => {
+          console.debug(response); 
+          this.isModel = true; 
+         
+
+         
+          $('#control-title-submit-button').addClass('btn-loading');
+
+         
+          window.location.reload();
+        })
+        .catch((error) => {
+         
+          console.error(error);
+          this.errors = error.response.data; 
+          this.hasErrors = true; 
+        });*/
+  },
+
     hideExportModal() {
       $(this.$refs.modalexp.$el).modal('hide')
     },
@@ -566,6 +614,7 @@ export default Vue.extend({
     restoreForm() {
       this.title = this.control.title
       this.organization = this.control.depositing_organization
+      this.isModel = this.control.is_model
     },
     clearErrors() {
       this.errors = ''
@@ -588,12 +637,15 @@ export default Vue.extend({
       const payload = {
         title: this.title,
         depositing_organization: this.organization,
+        is_model: this.isModel
       }
       axios.put(backendUrls.control(this.control.id), payload)
         .then(response => {
           console.debug(response)
           this.title = response.data.title
           this.organization = response.data.depositing_organization
+          this.isModel = response.data.is_model
+          console.log("Marquer comme modèle : ", response.data)
 
           // Display a "loading" spinner on clicked button, while the page reloads, so that they know their click
           // has been registered.

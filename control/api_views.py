@@ -97,6 +97,7 @@ class ControlViewSet(mixins.CreateModelMixin,
         response = super(ControlViewSet, self).update(request, *args, **kwargs)
         control = self.get_queryset().get(id=response.data['id'])
         self.add_log_entry(control=control, verb='updated control')
+        print ("update control")
         return response
 
     

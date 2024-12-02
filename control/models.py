@@ -100,6 +100,12 @@ class Control(SoftDeleteModel):
         unique=True,
         error_messages={'unique': UNIQUE_ERROR_MESSAGE})
 
+    is_model = models.BooleanField(
+        verbose_name="Modèle",
+        default=False,
+        help_text="Indique si cette procédure est un modèle"
+    )
+    
     objects = DeletableQuerySet.as_manager()
 
     class Meta:
@@ -111,6 +117,7 @@ class Control(SoftDeleteModel):
             'id': self.id,
             'title': self.title,
             'depositing_organization': self.depositing_organization,
+            'is_model': self.is_model,
         }
 
     @property
