@@ -209,14 +209,14 @@
                 Exporter (.zip)
               </button>
 
-              <!--<button
+              <button v-if="!isModel" 
                 class="dropdown-item"
                 type="button"
                 @click="markAsModel"
               >
                 <span class="fe fe-star mr-2" aria-hidden="true"></span>
                 Marquer comme modèle
-              </button>-->
+              </button>
               <button class="dropdown-item text-danger"
                       type="button"
                       @click="startControlDeleteFlow"
@@ -452,29 +452,25 @@ export default Vue.extend({
       $(this.$refs.modalexp.$el).modal('show')
     },
     markAsModel() {
-      /*const payload = {
-        is_model: true 
-      };
-
-     
+      this.clearErrors()
+      const payload = {
+        title: this.title,
+        depositing_organization: this.organization,
+        is_model: true
+      }
       axios.put(backendUrls.control(this.control.id), payload)
         .then(response => {
-          console.debug(response); 
-          this.isModel = true; 
-         
-
-         
-          $('#control-title-submit-button').addClass('btn-loading');
-
-         
-          window.location.reload();
+          console.debug(response)
+          this.title = response.data.title
+          this.organization = response.data.depositing_organization
+          this.isModel = response.data.is_model
+          console.log("Marquer comme modèle : ", response.data)
         })
         .catch((error) => {
-         
-          console.error(error);
-          this.errors = error.response.data; 
-          this.hasErrors = true; 
-        });*/
+          console.error(error)
+          this.errors = error.response.data
+          this.hasErrors = true
+        })
   },
 
     hideExportModal() {
