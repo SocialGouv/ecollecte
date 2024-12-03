@@ -214,8 +214,8 @@
                 type="button"
                 @click="markAsModel"
               >
-                <span class="fe fe-star mr-2" aria-hidden="true"></span>
-                Marquer comme modèle
+               <span class="far fa-file-alt" aria-hidden="true"></span>
+                  Marquer comme modèle
               </button>
               <button class="dropdown-item text-danger"
                       type="button"
