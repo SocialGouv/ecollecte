@@ -338,6 +338,8 @@ export default Vue.extend({
     },
     cloneControl(newRefCode) {
 
+      this.markAsModel()
+
       const valid = this.reference_code &&
                     !this.controls.find(ctrl => ctrl.reference_code === newRefCode)
 
