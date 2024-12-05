@@ -221,6 +221,7 @@ export default Vue.extend({
           href: backend['control-detail'](control.id),
           title: makeControlTitle(control),
           ctrl_id: control.id,
+          class: control.is_model ? 'far fa-file-alt' : '',
         }
 
       const currentURL = this.window.location.pathname
@@ -364,4 +365,19 @@ export default Vue.extend({
   .v-sidebar-menu.vsm_white-theme.vsm_expanded .vsm--item_open .vsm--link_level-1 .vsm--icon {
     background-color: #3473cb;
   }
+  
+  /*.vsm--icon.has-extra-icon {
+    display: inline-flex;       
+    align-items: center;
+  }
+
+  .vsm--icon.has-extra-icon::after {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 400;           
+    content: '\f15c';           
+    margin-left: 8px;           
+  }*/
+
+
+
 </style>
