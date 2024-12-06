@@ -112,6 +112,7 @@ export default Vue.extend({
     window: {
       default: () => window,
     },
+    accessType: { type: String, default: '' },
   },
   data() {
     return {
@@ -216,13 +217,14 @@ export default Vue.extend({
 
       const menu = []
       this.controls.forEach(async control => {
+        await this.getAccessTypeLibelle(control.id)
         const controlMenu = {
-          icon: 'fa fa-archive',
+          icon: this.accessType === 'demandeur' && control.is_model ? 'far fa-file-alt' : 'fa fa-archive',
           href: backend['control-detail'](control.id),
           title: makeControlTitle(control),
           ctrl_id: control.id,
-          class: control.is_model ? 'far fa-file-alt' : '',
         }
+        
 
       const currentURL = this.window.location.pathname
       if (currentURL !== '/faq/' && currentURL !== '/declaration-conformite/' && currentURL !== '/cgu/') {
@@ -271,6 +273,14 @@ export default Vue.extend({
         $("#sidebar").toggleClass("hidden");
       },
       300);
+    },
+    async getAccessTypeLibelle(ctlId) {
+      const resp = await axios.get(backend.getAccessToControl(ctlId))
+      this.accessType = resp.data[0].access_type
+      if (this.accessType === 'demandeur') {
+        return 'Demandeur'
+      }
+      return 'Répondant'
     },
   },
 })
@@ -366,18 +376,4 @@ export default Vue.extend({
     background-color: #3473cb;
   }
   
-  /*.vsm--icon.has-extra-icon {
-    display: inline-flex;       
-    align-items: center;
-  }
-
-  .vsm--icon.has-extra-icon::after {
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 400;           
-    content: '\f15c';           
-    margin-left: 8px;           
-  }*/
-
-
-
 </style>
