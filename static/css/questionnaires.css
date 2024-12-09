@@ -96,7 +96,7 @@
 .view-button {
     font-size: smaller;
 }
-/* Supprime le scroll horizontal global */
+/* Supprime le scroll horizontal global 
 html,
 body {
     margin: 0;
@@ -173,3 +173,4 @@ datepicker {
         margin-bottom: 12px;
     }
 }
+*/
