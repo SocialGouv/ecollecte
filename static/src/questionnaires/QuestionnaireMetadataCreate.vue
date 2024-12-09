@@ -2,7 +2,11 @@
   <div>
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Etape 1 : Renseigner l'introduction</h2>
+        <h2 class="card-title">
+          <span data-v-d81dfb="" class="number"></span>
+          <span class="sr-only">En cours de consultation</span>
+          Etape 1 : Renseigner l'introduction
+        </h2>
       </div>
       <div class="card-body pb-6">
         <form ref="form">
@@ -65,11 +69,14 @@
             </questionnaire-file-list>
           </div>
         </form>
-
+        <a class="wizard-step-graphics">
+          <span class="sr-only">Étape validée</span>
+        </a>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import Vue from 'vue'

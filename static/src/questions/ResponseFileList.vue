@@ -43,6 +43,7 @@
                       :data-target="'#trash-confirm-modal-' + file.id"
                       class="fe fe-trash-2 btn btn-outline-primary"
               >
+               <i class="fe fe-trash-2" aria-hidden="true"></i>
               <span class="sr-only">Mettre à la corbeille</span>
               </button>
             </td>
