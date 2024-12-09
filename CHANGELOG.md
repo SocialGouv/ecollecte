@@ -6,6 +6,12 @@ Ce format se base sur [keep a changelog](https://keepachangelog.com/fr/1.0.0/), 
 projet adhère à [la Gestion sémantique de version](https://semver.org/lang/fr/spec/v2.0.0.html).
 
 ## [En cours]
+## [3.1.0] - 2024-12-09
+### Modifications
+- CP-179 : Identifier un espace de dépôt comme modèle
+- CP-180 : Identifier un espace de dépôt comme modèle via l'accès rapide
+- CP-181 : Identifier un espace de dépôt comme modèle quand celui-ci est dupliqué
+- CP-68 : Contre Audit RGAA V2
 ## [3.0.12] - 2024-11-20
 ### Modifications
 - CP-20 : Identifier les espaces modèle - Lot 1
