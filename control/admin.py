@@ -14,7 +14,7 @@ from django.views.generic.detail import SingleObjectMixin
 from ordered_model.admin import OrderedModelAdmin
 from ordered_model.admin import OrderedTabularInline, OrderedInlineModelAdminMixin
 
-from soft_deletion.admin import SoftDeletedAdmin, IsActiveFilter
+from soft_deletion.admin import SoftDeletedAdmin, IsActiveFilter, IsModelFilter
 
 from .models import Control, Questionnaire, Theme, Question, QuestionFile, ResponseFile, QuestionnaireFile
 from .questionnaire_duplicate import QuestionnaireDuplicateMixin
@@ -86,7 +86,7 @@ class ControlAdmin(SoftDeletedAdmin, OrderedInlineModelAdminMixin, OrderedModelA
     search_fields = (
         'title', 'reference_code', 'questionnaires__title', 'questionnaires__description')
     inlines = (QuestionnaireInline, )
-    list_filter = (IsActiveFilter,)
+    list_filter = (IsActiveFilter,IsModelFilter,)
 
 
 class ThemeInline(OrderedTabularInline):
