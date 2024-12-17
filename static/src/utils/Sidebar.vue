@@ -183,19 +183,35 @@ export default Vue.extend({
   },
   methods: {
     onItemClick(event, item, node) {
-  
+
       const targetElement = event.target;
 
       if (targetElement.matches('span.vsm--badge.fas.fa-thumbtack')) {
         console.log('Clic sur épinglé !');
+        const isCurrentlyPinned = targetElement.classList.contains('red-pin');
+        console.log('isCurrentlyPinned : ', isCurrentlyPinned);
+        targetElement.classList.toggle('red-pin');
+        this.markAsPinned(item.ctrl_id);
         event.stopPropagation(); 
       } else {
         console.log('Clic ailleurs dans la ligne');
       }
-
-   
-  
       
+    },
+    markAsPinned(ctrl_id){
+      const payload = {
+        is_pinned: true
+      };
+
+      axios.patch(backend.control(ctrl_id), payload)
+        .then(response => {
+          this.is_pinned = response.data.is_pinned;
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la mise à jour : ", error);
+          this.errors = error.response?.data || {};
+          this.hasErrors = true;
+        });
     },
     displayError(err) {
       this.hasError = true
@@ -400,4 +416,8 @@ export default Vue.extend({
   .v-sidebar-menu.vsm_white-theme.vsm_expanded .vsm--item_open .vsm--link_level-1 .vsm--icon {
     background-color: #3473cb;
   }
+  .red-pin {
+  color: red;
+  }
+
 </style>

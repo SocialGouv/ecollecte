@@ -106,6 +106,12 @@ class Control(SoftDeleteModel):
         help_text="Indique si cette procédure est un modèle"
     )
     
+    is_pinned = models.BooleanField(
+        verbose_name="Epinglé",
+        default=False,
+        help_text="Indique si cette procédure est épinglée"
+    )
+    
     objects = DeletableQuerySet.as_manager()
 
     class Meta:
@@ -118,6 +124,7 @@ class Control(SoftDeleteModel):
             'title': self.title,
             'depositing_organization': self.depositing_organization,
             'is_model': self.is_model,
+            'is_pinned': self.is_pinned, 
         }
 
     @property
