@@ -25,6 +25,7 @@
       :hideToggle="true"
       :show-one-child="true"
       theme="white-theme"
+      @item-click="onItemClick"
     >
         <template v-slot:header>
           <div id="sidebar-title" class="card-header flex-row justify-content-center">
@@ -181,6 +182,21 @@ export default Vue.extend({
     }
   },
   methods: {
+    onItemClick(event, item, node) {
+  
+      const targetElement = event.target;
+
+      if (targetElement.matches('span.vsm--badge.fas.fa-thumbtack')) {
+        console.log('Clic sur épinglé !');
+        event.stopPropagation(); 
+      } else {
+        console.log('Clic ailleurs dans la ligne');
+      }
+
+   
+  
+      
+    },
     displayError(err) {
       this.hasError = true
       this.errorMessage = err.message ? err.message : err
@@ -224,6 +240,15 @@ export default Vue.extend({
           href: backend['control-detail'](control.id),
           title: makeControlTitle(control),
           ctrl_id: control.id,
+           badge: {
+            icon: 'fas fa-thumbtack',
+            class: 'fas fa-thumbtack',
+            attributes: {
+              role: 'img',
+              'aria-label': 'épinglé' 
+            },
+            style:'font-size:48px;color:blue'
+          }
         }
 
       const currentURL = this.window.location.pathname
