@@ -189,18 +189,18 @@ export default Vue.extend({
       if (targetElement.matches('span.vsm--badge.fas.fa-thumbtack')) {
         console.log('Clic sur épinglé !');
         const isCurrentlyPinned = targetElement.classList.contains('red-pin');
-        console.log('isCurrentlyPinned : ', isCurrentlyPinned);
         targetElement.classList.toggle('red-pin');
-        this.markAsPinned(item.ctrl_id);
+        this.markAsPinned(item.ctrl_id, !isCurrentlyPinned);
         event.stopPropagation(); 
       } else {
         console.log('Clic ailleurs dans la ligne');
       }
       
     },
-    markAsPinned(ctrl_id){
+    markAsPinned(ctrl_id, isPinned){
+
       const payload = {
-        is_pinned: true
+        is_pinned: isPinned
       };
 
       axios.patch(backend.control(ctrl_id), payload)
@@ -208,9 +208,9 @@ export default Vue.extend({
           this.is_pinned = response.data.is_pinned;
         })
         .catch((error) => {
-          console.error("Erreur lors de la mise à jour : ", error);
-          this.errors = error.response?.data || {};
-          this.hasErrors = true;
+          console.error(error)
+          this.errors = error.response.data
+          this.hasErrors = true
         });
     },
     displayError(err) {
@@ -258,7 +258,7 @@ export default Vue.extend({
           ctrl_id: control.id,
            badge: {
             icon: 'fas fa-thumbtack',
-            class: 'fas fa-thumbtack',
+            class: `fas fa-thumbtack ${control.is_pinned ? 'red-pin' : ''}`,
             attributes: {
               role: 'img',
               'aria-label': 'épinglé' 

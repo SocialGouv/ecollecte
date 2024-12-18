@@ -466,7 +466,6 @@ export default Vue.extend({
           this.title = response.data.title
           this.organization = response.data.depositing_organization
           this.isModel = response.data.is_model
-          console.log("Marquer comme modèle : ", response.data)
         })
         .catch((error) => {
           console.error(error)
