@@ -182,28 +182,18 @@ export default Vue.extend({
     }
   },
   methods: {
+
     onItemClick(event, item, node) {
-
       const targetElement = event.target;
-
       if (targetElement.matches('span.vsm--badge.fas.fa-thumbtack')) {
-        console.log('Clic sur épinglé !');
-        event.stopImmediatePropagation();
-        //event.stopPropagation();  
-        const isCurrentlyPinned = targetElement.classList.contains('red-pin');
-        targetElement.classList.toggle('red-pin');
-        this.markAsPinned(item.ctrl_id, !isCurrentlyPinned);
-        //return; 
-      
-      }else if(targetElement.matches('.vsm--arrow') || targetElement.matches('.vsm--arrow_open')){
-         console.log('Clic sur la flèche, ouvrir la sous-liste');
-      }else{
-         console.log('Clic ailleurs dans la ligne');
-      }    
+
+        targetElement.classList.toggle('unpinned');
+        const isPinned = !targetElement.classList.contains('unpinned');
+        this.markAsPinned(item.ctrl_id, isPinned);
+      } 
     },
     
     markAsPinned(ctrl_id, isPinned){
-
       const payload = {
         is_pinned: isPinned
       };
@@ -266,12 +256,12 @@ export default Vue.extend({
         if (control.is_model) {
           controlMenu.badge = {
             icon: 'fas fa-thumbtack',
-            class: `fas fa-thumbtack ${control.is_pinned ? 'red-pin' : ''}`,
+            class: `fas fa-thumbtack ${control.is_pinned ? '' : 'unpinned'}`,
             attributes: {
               role: 'img',
               'aria-label': 'épinglé'
             },
-            style: 'font-size:48px;color:blue'
+            
           };
         }
 
@@ -312,21 +302,15 @@ export default Vue.extend({
       }
         menu.push(controlMenu)
         menu.sort((a, b) => {
-          const aPinned = a.badge && a.badge.class.includes('red-pin'); 
-          const bPinned = b.badge && b.badge.class.includes('red-pin');
+            const aPinned = a.badge && !a.badge.class.includes('unpinned'); 
+            const bPinned = b.badge && !b.badge.class.includes('unpinned');
 
-          const aHasBadge = a.badge && !aPinned; 
-          const bHasBadge = b.badge && !bPinned;
-
-          if (aPinned && !bPinned) return -1;
-          if (!aPinned && bPinned) return 1;
-
-          if (aHasBadge && !bHasBadge) return -1;
-          if (!aHasBadge && bHasBadge) return 1;
-
-          return b.ctrl_id - a.ctrl_id;
-        });
-
+            if (aPinned && !bPinned) return -1; 
+            if (!aPinned && bPinned) return 1; 
+            
+            return b.ctrl_id - a.ctrl_id;
+          }
+        );
 
       })
       this.isMenuBuilt = true
@@ -440,8 +424,12 @@ export default Vue.extend({
   .v-sidebar-menu.vsm_white-theme.vsm_expanded .vsm--item_open .vsm--link_level-1 .vsm--icon {
     background-color: #3473cb;
   }
-  .red-pin {
-  color: red;
+ .vsm--badge.fas.fa-thumbtack {
+  color: gray; 
+  }
+
+.vsm--badge.fas.fa-thumbtack:not(.unpinned) {
+  color: inherit; 
   }
 
 </style>
