@@ -95,6 +95,27 @@
             </span>
           </div>
 
+          <div class="form-group mb-6">
+            <label id="title-label" for="nom_controle" class="form-label">
+              Séléctionnez un espace de dépôt modèle :
+            </label>
+          
+            <div class="flex-row align-items-center">
+              <span class="far fa-file-alt mr-2 text-muted" aria-hidden="true"></span>
+              <select
+                id="nom_controle"
+                v-model="selectedModel"
+                class="form-control"
+                aria-labelledby="title-label"
+              >
+                <option value="">Sélectionnez un modèle</option>
+                <option v-for="model in models" :key="model.id" :value="model.id">
+                  {{ model.reference_code }}
+                </option>
+              </select>
+            </div>
+          </div>
+
       </div>
     </confirm-modal-with-wait>
   </div>
@@ -119,7 +140,13 @@ export default Vue.extend({
       reference_code_suffix: '',
       year: new Date().getFullYear(),
       isModalOpen: false, 
+      models: [], 
+      selectedModel: "" ,
+      referenceError: false,
     }
+  },
+  created() {
+    this.loadModels(); 
   },
   computed: {
     reference_code_prefix: function () {
@@ -148,23 +175,164 @@ export default Vue.extend({
         this.$refs.addControlButton.focus();
       });
     },
-    createControl: function(processingDoneCallback) {
-      const payload = {
-        title: this.title,
-        depositing_organization: this.organization,
-        reference_code: this.reference_code_prefix + this.reference_code_suffix,
-      }
-      axios.post(backendUrls.control(), payload)
-        .then(response => {
-          console.debug(response);
-          processingDoneCallback(null, response, backendUrls.home());
+    loadModels() {
+      axios
+        .get(backendUrls.getControlsList())
+        .then((response) => {
+          this.models = response.data.filter((control) => control.is_model === true);
         })
         .catch((error) => {
-          console.error('Error creating control', error)
-          const errorMessage = this.makeErrorMessage(error)
-          processingDoneCallback(errorMessage)
-        })
+          console.error("Erreur lors du chargement des modèles :", error);
+        });
     },
+    createControl: function(processingDoneCallback) {
+      if (this.selectedModel) {
+        console.log('createControl -  selectedModel ')
+        this.createControlWithModel(processingDoneCallback, this.selectedModel);
+      }else{
+        const payload = {
+          title: this.title,
+          depositing_organization: this.organization,
+          reference_code: this.reference_code_prefix + this.reference_code_suffix,
+        }
+        axios.post(backendUrls.control(), payload)
+          .then(response => {
+            console.debug(response);
+            processingDoneCallback(null, response, backendUrls.home());
+          })
+          .catch((error) => {
+            console.error('Error creating control', error)
+            const errorMessage = this.makeErrorMessage(error)
+            processingDoneCallback(errorMessage)
+          })
+     } 
+    },
+    createControlWithModel: function(processingDoneCallback, controlId) {
+      console.log('createControlWithModel...')
+      const payload = {
+          title: this.title,
+          depositing_organization: this.organization,
+          reference_code: this.reference_code_prefix + this.reference_code_suffix,
+        }
+        axios.post(backendUrls.control(), payload)
+          .then(response => {
+            console.debug(response);
+            processingDoneCallback(null, response, backendUrls.home());
+          })
+          .catch((error) => {
+            console.error('Error creating control', error)
+            const errorMessage = this.makeErrorMessage(error)
+            processingDoneCallback(errorMessage)
+          })
+     
+    },
+    
+    
+    createQuestionnaire(newRefCode) {
+
+      const valid = this.reference_code &&
+                    !this.controls.find(ctrl => ctrl.reference_code === newRefCode)
+
+      if (!valid) {
+        this.referenceError = true
+        return
+      }
+
+      const getCreateMethodCtrl = () => axios.post.bind(this, backendUrls.control())
+
+      
+        const questionnaires = this.accessibleQuestionnaires
+          .filter(aq => this.checkedQuestionnaires.includes(aq.id))
+        const ctrl = {
+         
+          title: this.control.title,
+          depositing_organization: this.control.depositing_organization,
+          reference_code: newRefCode,
+          questionnaires: questionnaires,
+        }
+       
+        getCreateMethodCtrl()(ctrl).then(async response => {
+         
+          
+          const controlId = response.data.id
+         
+         
+        
+        const resp = await axios.get(backendUrls.getQuestionnaireAndThemesByCtlId(this.control.id))
+        this.control = resp.data.filter(obj => obj.id === this.control.id)[0]
+
+        this.accessibleQuestionnaires = this.control.questionnaires
+          .filter(aq => this.checkedQuestionnaires.includes(aq.id))
+
+          const promises = this.accessibleQuestionnaires
+            .filter(aq => this.checkedQuestionnaires.includes(aq.id))
+            .map(q => {
+              const themes = q.themes.map(t => {
+                const qq = t.questions.map(q => { return { description: q.description } })
+                return { title: t.title, questions: qq }
+              })
+
+              const newQ = { ...q, control: controlId, is_draft: true, is_replied:false, has_replies:false, is_finalized:false, id: null, themes: [] }
+              return this.cloneQuestionnaire(newQ, themes, q.themes)
+            })
+
+          Promise.all(promises).then((values) => {
+            setTimeout(() => { window.location.href = backendUrls.home(); }, 3000);
+          });
+        })
+
+        this.hideCloneModal()
+      
+    },
+    async cloneQuestionnaire(questionnaire, themes, oldThemes) {
+      const getCreateMethod = () => axios.post.bind(this, backendUrls.questionnaire())
+      const getUpdateMethod = (qId) => axios.put.bind(this, backendUrls.questionnaire(qId))
+
+      const promise = await getCreateMethod()(questionnaire).then(async response => {
+        const qId = response.data.id
+        const newQ = { ...questionnaire, themes: themes }
+
+          newQ.questionnaire_files.map(qf => {
+                axios.get(qf.url, { responseType: 'blob' }).then(response => {
+                  const formData = new FormData()
+                  formData.append('file', response.data, qf.basename)
+                  formData.append('questionnaire', qId)
+                  axios.post(backendUrls.piecejointe(), formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                    },
+                  })
+                })
+              }) 
+
+        await getUpdateMethod(qId)(newQ).then(response => {
+          const updatedQ = response.data
+
+          oldThemes.map(t => {
+            t.questions.map(q => {
+              const qId = updatedQ.themes.find(updatedT => updatedT.order === t.order)
+                .questions.find(updatedQ => updatedQ.order === q.order).id
+
+              q.question_files.map(qf => {
+                axios.get(qf.url, { responseType: 'blob' }).then(response => {
+                  const formData = new FormData()
+                  formData.append('file', response.data, qf.basename)
+                  formData.append('question', qId)
+                  axios.post(backendUrls.annexe(), formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                    },
+                  })
+                })
+              })
+            })
+          })
+        })
+      })
+
+      return promise
+    },
+
     makeErrorMessage: function (error) {
       if (error.response && error.response.data && error.response.data.reference_code) {
         const requestedCode = JSON.parse(error.response.config.data).reference_code
