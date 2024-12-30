@@ -267,6 +267,7 @@ export default Vue.extend({
       title: '',
       organization: '',
       isModel: false, 
+      isPinned:false,
       errors: '',
       hasErrors: false,
       referenceError: false,
@@ -466,7 +467,6 @@ export default Vue.extend({
           this.title = response.data.title
           this.organization = response.data.depositing_organization
           this.isModel = response.data.is_model
-          console.log("Marquer comme modèle : ", response.data)
         })
         .catch((error) => {
           console.error(error)
@@ -637,14 +637,20 @@ export default Vue.extend({
         depositing_organization: this.organization,
         is_model: this.isModel
       }
+      if (!this.isModel) {
+        payload.is_pinned = false;
+        
+      }
+
       axios.put(backendUrls.control(this.control.id), payload)
         .then(response => {
           console.debug(response)
           this.title = response.data.title
           this.organization = response.data.depositing_organization
           this.isModel = response.data.is_model
-          console.log("Marquer comme modèle : ", response.data)
-
+           if (!this.isModel) {
+            this.isPinned = response.data.is_pinned
+          }
           // Display a "loading" spinner on clicked button, while the page reloads, so that they know their click
           // has been registered.
           $('#control-title-submit-button').addClass('btn-loading')

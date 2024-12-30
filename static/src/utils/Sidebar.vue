@@ -25,6 +25,7 @@
       :hideToggle="true"
       :show-one-child="true"
       theme="white-theme"
+      @item-click="onItemClick"
     >
         <template v-slot:header>
           <div id="sidebar-title" class="card-header flex-row justify-content-center">
@@ -113,6 +114,7 @@ export default Vue.extend({
     window: {
       default: () => window,
     },
+    accessType: { type: String, default: '' },
   },
   data() {
     return {
@@ -180,6 +182,32 @@ export default Vue.extend({
     }
   },
   methods: {
+
+    onItemClick(event, item, node) {
+      const targetElement = event.target;
+      if (targetElement.matches('span.vsm--badge.fas.fa-thumbtack')) {
+
+        targetElement.classList.toggle('unpinned');
+        const isPinned = !targetElement.classList.contains('unpinned');
+        this.markAsPinned(item.ctrl_id, isPinned);
+      } 
+    },
+    
+    markAsPinned(ctrl_id, isPinned){
+      const payload = {
+        is_pinned: isPinned
+      };
+
+      axios.patch(backend.control(ctrl_id), payload)
+        .then(response => {
+          this.is_pinned = response.data.is_pinned;
+        })
+        .catch((error) => {
+          console.error(error)
+          this.errors = error.response.data
+          this.hasErrors = true
+        });
+    },
     displayError(err) {
       this.hasError = true
       this.errorMessage = err.message ? err.message : err
@@ -217,11 +245,24 @@ export default Vue.extend({
 
       const menu = []
       this.controls.forEach(async control => {
+        await this.getAccessTypeLibelle(control.id)
         const controlMenu = {
-          icon: 'fa fa-archive',
+          icon: this.accessType === 'demandeur' && control.is_model ? 'far fa-file-alt' : 'fa fa-archive',
           href: backend['control-detail'](control.id),
           title: makeControlTitle(control),
           ctrl_id: control.id,
+        }
+
+        if (control.is_model) {
+          controlMenu.badge = {
+            icon: 'fas fa-thumbtack',
+            class: `fas fa-thumbtack ${control.is_pinned ? '' : 'unpinned'}`,
+            attributes: {
+              role: 'img',
+              'aria-label': 'épinglé'
+            },
+            
+          };
         }
 
       const currentURL = this.window.location.pathname
@@ -260,7 +301,17 @@ export default Vue.extend({
         }
       }
         menu.push(controlMenu)
-        menu.sort((a, b) => { return b.ctrl_id - a.ctrl_id })
+        menu.sort((a, b) => {
+            const aPinned = a.badge && !a.badge.class.includes('unpinned'); 
+            const bPinned = b.badge && !b.badge.class.includes('unpinned');
+
+            if (aPinned && !bPinned) return -1; 
+            if (!aPinned && bPinned) return 1; 
+            
+            return b.ctrl_id - a.ctrl_id;
+          }
+        );
+
       })
       this.isMenuBuilt = true
       this.menu = menu
@@ -271,6 +322,14 @@ export default Vue.extend({
         $("#sidebar").toggleClass("hidden");
       },
       300);
+    },
+    async getAccessTypeLibelle(ctlId) {
+      const resp = await axios.get(backend.getAccessToControl(ctlId))
+      this.accessType = resp.data[0].access_type
+      if (this.accessType === 'demandeur') {
+        return 'Demandeur'
+      }
+      return 'Répondant'
     },
   },
 })
@@ -365,4 +424,12 @@ export default Vue.extend({
   .v-sidebar-menu.vsm_white-theme.vsm_expanded .vsm--item_open .vsm--link_level-1 .vsm--icon {
     background-color: #3473cb;
   }
+ .vsm--badge.fas.fa-thumbtack {
+  color: gray; 
+  }
+
+.vsm--badge.fas.fa-thumbtack:not(.unpinned) {
+  color: inherit; 
+  }
+
 </style>
