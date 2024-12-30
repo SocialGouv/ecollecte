@@ -6,6 +6,10 @@ Ce format se base sur [keep a changelog](https://keepachangelog.com/fr/1.0.0/), 
 projet adhère à [la Gestion sémantique de version](https://semver.org/lang/fr/spec/v2.0.0.html).
 
 ## [En cours]
+## [3.1.1] - 2024-12-30
+### Modifications
+- CP-182 : Dans la liste des espaces de dépôt, identifier les modèles
+- CP-183 : Possibilité d'épingler en haut de la liste des dépôts, les espaces de dépôt modèles
 ## [3.1.0] - 2024-12-09
 ### Modifications
 - CP-179 : Identifier un espace de dépôt comme modèle
