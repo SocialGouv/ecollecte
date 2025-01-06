@@ -143,6 +143,7 @@ export default Vue.extend({
       models: [], 
       selectedModel: "" ,
       referenceError: false,
+      controlId:null,
     }
   },
   created() {
@@ -187,9 +188,10 @@ export default Vue.extend({
     },
     createControl: function(processingDoneCallback) {
       if (this.selectedModel) {
-        console.log('createControl -  selectedModel ')
+        console.log('createControlWithModel ')
         this.createControlWithModel(processingDoneCallback, this.selectedModel);
       }else{
+        console.log('createControlWithoutModel ')
         const payload = {
           title: this.title,
           depositing_organization: this.organization,
@@ -207,131 +209,133 @@ export default Vue.extend({
           })
      } 
     },
-    createControlWithModel: function(processingDoneCallback, controlId) {
-      console.log('createControlWithModel...')
-      const payload = {
+    
+    createControlWithModel: async function (processingDoneCallback, modelControlId) {
+      try {
+
+        const payload = {
           title: this.title,
           depositing_organization: this.organization,
           reference_code: this.reference_code_prefix + this.reference_code_suffix,
-        }
-        axios.post(backendUrls.control(), payload)
-          .then(response => {
-            console.debug(response);
-            processingDoneCallback(null, response, backendUrls.home());
-          })
-          .catch((error) => {
-            console.error('Error creating control', error)
-            const errorMessage = this.makeErrorMessage(error)
-            processingDoneCallback(errorMessage)
-          })
-     
-    },
-    
-    
-    createQuestionnaire(newRefCode) {
+        };
 
-      const valid = this.reference_code &&
-                    !this.controls.find(ctrl => ctrl.reference_code === newRefCode)
+        const response = await axios.post(backendUrls.control(), payload);
+        this.controlId = response.data.id;
+        this.createQuestionnaire(modelControlId, this.controlId);
 
-      if (!valid) {
-        this.referenceError = true
-        return
+        processingDoneCallback(null, response, backendUrls.home());
+      } catch (error) {
+        console.error('Error creating control', error);
+        const errorMessage = this.makeErrorMessage(error);
+        processingDoneCallback(errorMessage);
       }
-
-      const getCreateMethodCtrl = () => axios.post.bind(this, backendUrls.control())
-
-      
-        const questionnaires = this.accessibleQuestionnaires
-          .filter(aq => this.checkedQuestionnaires.includes(aq.id))
-        const ctrl = {
-         
-          title: this.control.title,
-          depositing_organization: this.control.depositing_organization,
-          reference_code: newRefCode,
-          questionnaires: questionnaires,
-        }
-       
-        getCreateMethodCtrl()(ctrl).then(async response => {
-         
-          
-          const controlId = response.data.id
-         
-         
-        
-        const resp = await axios.get(backendUrls.getQuestionnaireAndThemesByCtlId(this.control.id))
-        this.control = resp.data.filter(obj => obj.id === this.control.id)[0]
-
-        this.accessibleQuestionnaires = this.control.questionnaires
-          .filter(aq => this.checkedQuestionnaires.includes(aq.id))
-
-          const promises = this.accessibleQuestionnaires
-            .filter(aq => this.checkedQuestionnaires.includes(aq.id))
-            .map(q => {
-              const themes = q.themes.map(t => {
-                const qq = t.questions.map(q => { return { description: q.description } })
-                return { title: t.title, questions: qq }
-              })
-
-              const newQ = { ...q, control: controlId, is_draft: true, is_replied:false, has_replies:false, is_finalized:false, id: null, themes: [] }
-              return this.cloneQuestionnaire(newQ, themes, q.themes)
-            })
-
-          Promise.all(promises).then((values) => {
-            setTimeout(() => { window.location.href = backendUrls.home(); }, 3000);
-          });
-        })
-
-        this.hideCloneModal()
-      
     },
-    async cloneQuestionnaire(questionnaire, themes, oldThemes) {
-      const getCreateMethod = () => axios.post.bind(this, backendUrls.questionnaire())
-      const getUpdateMethod = (qId) => axios.put.bind(this, backendUrls.questionnaire(qId))
 
-      const promise = await getCreateMethod()(questionnaire).then(async response => {
-        const qId = response.data.id
-        const newQ = { ...questionnaire, themes: themes }
+  async createQuestionnaire(modelControlId, controlId ) {
+    try {
+      console.log('createQuestionnaire - modelControlId : ', modelControlId );
+      console.log('createQuestionnaire  - controlId : ', controlId );
 
-          newQ.questionnaire_files.map(qf => {
-                axios.get(qf.url, { responseType: 'blob' }).then(response => {
-                  const formData = new FormData()
-                  formData.append('file', response.data, qf.basename)
-                  formData.append('questionnaire', qId)
-                  axios.post(backendUrls.piecejointe(), formData, {
-                    headers: {
-                      'Content-Type': 'multipart/form-data',
-                    },
-                  })
-                })
-              }) 
+      const response = await axios.get(backendUrls.getQuestionnaireAndThemesByCtlId(modelControlId ));
+      const data = response.data;
 
-        await getUpdateMethod(qId)(newQ).then(response => {
-          const updatedQ = response.data
+      if (!data || !Array.isArray(data)) {
+        console.error('Erreur :', data);
+        return;
+      }
+      const promises = data.flatMap(async (control) => {
+        return Promise.all(
+          control.questionnaires.map(async (questionnaire) => {
+            const themes = questionnaire.themes.map((theme) => {
+              const questions = theme.questions.map((question) => ({
+                description: question.description,
+                question_files: question.question_files, 
+              }));
 
-          oldThemes.map(t => {
-            t.questions.map(q => {
-              const qId = updatedQ.themes.find(updatedT => updatedT.order === t.order)
-                .questions.find(updatedQ => updatedQ.order === q.order).id
+              return {
+                title: theme.title,
+                order: theme.order,
+                questions,
+              };
+            });
 
-              q.question_files.map(qf => {
-                axios.get(qf.url, { responseType: 'blob' }).then(response => {
-                  const formData = new FormData()
-                  formData.append('file', response.data, qf.basename)
-                  formData.append('question', qId)
-                  axios.post(backendUrls.annexe(), formData, {
-                    headers: {
-                      'Content-Type': 'multipart/form-data',
-                    },
-                  })
-                })
-              })
-            })
+            const newQuestionnaire = {
+              ...questionnaire,
+              control: controlId,
+              is_draft: true,
+              is_replied: false,
+              has_replies: false,
+              is_finalized: false,
+              id: null, 
+              themes,
+            };
+
+            const createMethod = () => axios.post(backendUrls.questionnaire(), newQuestionnaire);
+            const updateMethod = (qId) => axios.put(backendUrls.questionnaire(qId), newQuestionnaire);
+
+            const createdQuestionnaire = await createMethod().then(async (res) => {
+              const qId = res.data.id;
+
+              const uploadFiles = newQuestionnaire.questionnaire_files.map(async (qf) => {
+                const fileResponse = await axios.get(qf.url, { responseType: 'blob' });
+                const formData = new FormData();
+                formData.append('file', fileResponse.data, qf.basename);
+                formData.append('questionnaire', qId);
+
+                return axios.post(backendUrls.piecejointe(), formData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data',
+                  },
+                });
+              });
+
+              await Promise.all(uploadFiles);
+
+              const updatedQuestionnaire = { ...newQuestionnaire, id: qId };
+              const updateResponse = await updateMethod(qId);
+
+              const updatedThemes = updateResponse.data.themes;
+
+              const uploadQuestionFiles = updatedThemes.flatMap((updatedTheme) => {
+                const originalTheme = themes.find((t) => t.order === updatedTheme.order);
+
+                return originalTheme.questions.flatMap((originalQuestion) => {
+                  const updatedQuestion = updatedTheme.questions.find(
+                    (uq) => uq.order === originalQuestion.order
+                  );
+
+                  return originalQuestion.question_files.map(async (qf) => {
+                    const fileResponse = await axios.get(qf.url, { responseType: 'blob' });
+                    const formData = new FormData();
+                    formData.append('file', fileResponse.data, qf.basename);
+                    formData.append('question', updatedQuestion.id);
+
+                    return axios.post(backendUrls.annexe(), formData, {
+                      headers: {
+                        'Content-Type': 'multipart/form-data',
+                      },
+                    });
+                  });
+                });
+              });
+
+              await Promise.all(uploadQuestionFiles);
+
+              return updateResponse.data;
+            });
+
+            return createdQuestionnaire;
           })
-        })
-      })
+        );
+      });
 
-      return promise
-    },
+      await Promise.all(promises);
+      console.log('Tous les questionnaires ont été créés avec succès.');
+    } catch (error) {
+      console.error('Erreur lors de la création des questionnaires :', error);
+    }
+},
+
 
     makeErrorMessage: function (error) {
       if (error.response && error.response.data && error.response.data.reference_code) {
