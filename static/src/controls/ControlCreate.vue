@@ -209,21 +209,25 @@ export default Vue.extend({
           })
      } 
     },
-    
     createControlWithModel: async function (processingDoneCallback, modelControlId) {
       try {
-
         const payload = {
           title: this.title,
           depositing_organization: this.organization,
           reference_code: this.reference_code_prefix + this.reference_code_suffix,
         };
 
-        const response = await axios.post(backendUrls.control(), payload);
-        this.controlId = response.data.id;
-        this.createQuestionnaire(modelControlId, this.controlId);
+        const controlResponse = await axios.post(backendUrls.control(), payload);
+        this.controlId = controlResponse.data.id;
 
-        processingDoneCallback(null, response, backendUrls.home());
+        try {
+          await this.createQuestionnaire(modelControlId, this.controlId);
+        } catch (questionnaireError) {
+          console.error('Error creating questionnaire', questionnaireError);
+          return processingDoneCallback('Erreur lors de la création du questionnaire.');
+        }
+
+        processingDoneCallback(null, controlResponse, backendUrls.home());
       } catch (error) {
         console.error('Error creating control', error);
         const errorMessage = this.makeErrorMessage(error);
@@ -233,9 +237,7 @@ export default Vue.extend({
 
   async createQuestionnaire(modelControlId, controlId ) {
     try {
-      console.log('createQuestionnaire - modelControlId : ', modelControlId );
-      console.log('createQuestionnaire  - controlId : ', controlId );
-
+    
       const response = await axios.get(backendUrls.getQuestionnaireAndThemesByCtlId(modelControlId ));
       const data = response.data;
 
