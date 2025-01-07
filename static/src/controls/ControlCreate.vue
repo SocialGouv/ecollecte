@@ -235,109 +235,94 @@ export default Vue.extend({
       }
     },
 
-  async createQuestionnaire(modelControlId, controlId ) {
+  async createQuestionnaire(modelControlId, controlId) {
     try {
-    
-      const response = await axios.get(backendUrls.getQuestionnaireAndThemesByCtlId(modelControlId ));
+      const response = await axios.get(backendUrls.getQuestionnaireAndThemesByCtlId(modelControlId));
       const data = response.data;
 
       if (!data || !Array.isArray(data)) {
         console.error('Erreur :', data);
         return;
       }
-      const promises = data.flatMap(async (control) => {
-        return Promise.all(
-          control.questionnaires.map(async (questionnaire) => {
-            const themes = questionnaire.themes.map((theme) => {
-              const questions = theme.questions.map((question) => ({
-                description: question.description,
-                question_files: question.question_files, 
-              }));
 
-              return {
-                title: theme.title,
-                order: theme.order,
-                questions,
-              };
-            });
+      for (const control of data) {
+        for (const questionnaire of control.questionnaires) {
+          const themes = questionnaire.themes.map((theme) => {
+            const questions = theme.questions.map((question) => ({
+              description: question.description,
+              question_files: question.question_files,
+            }));
 
-            const newQuestionnaire = {
-              ...questionnaire,
-              control: controlId,
-              is_draft: true,
-              is_replied: false,
-              has_replies: false,
-              is_finalized: false,
-              id: null, 
-              themes,
+            return {
+              title: theme.title,
+              order: theme.order,
+              questions,
             };
+          });
 
-            const createMethod = () => axios.post(backendUrls.questionnaire(), newQuestionnaire);
-            const updateMethod = (qId) => axios.put(backendUrls.questionnaire(qId), newQuestionnaire);
+          const newQuestionnaire = {
+            ...questionnaire,
+            control: controlId,
+            is_draft: true,
+            is_replied: false,
+            has_replies: false,
+            is_finalized: false,
+            id: null,
+            themes,
+          };
 
-            const createdQuestionnaire = await createMethod().then(async (res) => {
-              const qId = res.data.id;
+          const createMethod = () => axios.post(backendUrls.questionnaire(), newQuestionnaire);
+          const updateMethod = (qId) => axios.put(backendUrls.questionnaire(qId), newQuestionnaire);
 
-              const uploadFiles = newQuestionnaire.questionnaire_files.map(async (qf) => {
-                const fileResponse = await axios.get(qf.url, { responseType: 'blob' });
-                const formData = new FormData();
-                formData.append('file', fileResponse.data, qf.basename);
-                formData.append('questionnaire', qId);
+          try {
+            const res = await createMethod();
+            const qId = res.data.id;
+            
+            for (const qf of newQuestionnaire.questionnaire_files) {
+              const fileResponse = await axios.get(qf.url, { responseType: 'blob' });
+              const formData = new FormData();
+              formData.append('file', fileResponse.data, qf.basename);
+              formData.append('questionnaire', qId);
 
-                return axios.post(backendUrls.piecejointe(), formData, {
-                  headers: {
-                    'Content-Type': 'multipart/form-data',
-                  },
-                });
+              await axios.post(backendUrls.piecejointe(), formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
               });
+            }
 
-              await Promise.all(uploadFiles);
+            const updatedQuestionnaire = { ...newQuestionnaire, id: qId };
+            const updateResponse = await updateMethod(qId);
+            const updatedThemes = updateResponse.data.themes;
 
-              const updatedQuestionnaire = { ...newQuestionnaire, id: qId };
-              const updateResponse = await updateMethod(qId);
+            for (const updatedTheme of updatedThemes) {
+              const originalTheme = themes.find((t) => t.order === updatedTheme.order);
 
-              const updatedThemes = updateResponse.data.themes;
+              for (const originalQuestion of originalTheme.questions) {
+                const updatedQuestion = updatedTheme.questions.find(
+                  (uq) => uq.order === originalQuestion.order
+                );
 
-              const uploadQuestionFiles = updatedThemes.flatMap((updatedTheme) => {
-                const originalTheme = themes.find((t) => t.order === updatedTheme.order);
+                for (const qf of originalQuestion.question_files) {
+                  const fileResponse = await axios.get(qf.url, { responseType: 'blob' });
+                  const formData = new FormData();
+                  formData.append('file', fileResponse.data, qf.basename);
+                  formData.append('question', updatedQuestion.id);
 
-                return originalTheme.questions.flatMap((originalQuestion) => {
-                  const updatedQuestion = updatedTheme.questions.find(
-                    (uq) => uq.order === originalQuestion.order
-                  );
-
-                  return originalQuestion.question_files.map(async (qf) => {
-                    const fileResponse = await axios.get(qf.url, { responseType: 'blob' });
-                    const formData = new FormData();
-                    formData.append('file', fileResponse.data, qf.basename);
-                    formData.append('question', updatedQuestion.id);
-
-                    return axios.post(backendUrls.annexe(), formData, {
-                      headers: {
-                        'Content-Type': 'multipart/form-data',
-                      },
-                    });
+                  await axios.post(backendUrls.annexe(), formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
                   });
-                });
-              });
+                }
+              }
+            }
 
-              await Promise.all(uploadQuestionFiles);
-
-              return updateResponse.data;
-            });
-
-            return createdQuestionnaire;
-          })
-        );
-      });
-
-      await Promise.all(promises);
-      console.log('Tous les questionnaires ont été créés avec succès.');
+          } catch (err) {
+            console.error('Erreur lors de la création du questionnaire :', err);
+          }
+        }
+      }
     } catch (error) {
       console.error('Erreur lors de la création des questionnaires :', error);
     }
-},
-
+  },
 
     makeErrorMessage: function (error) {
       if (error.response && error.response.data && error.response.data.reference_code) {
