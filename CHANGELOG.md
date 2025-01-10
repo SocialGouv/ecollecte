@@ -6,6 +6,9 @@ Ce format se base sur [keep a changelog](https://keepachangelog.com/fr/1.0.0/), 
 projet adhère à [la Gestion sémantique de version](https://semver.org/lang/fr/spec/v2.0.0.html).
 
 ## [En cours]
+## [3.2.0] - 2025-01-10
+### Modifications
+- CP-185 : Possiblité de sélectionner un modèle lors de la création d'un espace de dépôt
 ## [3.1.1] - 2024-12-30
 ### Modifications
 - CP-182 : Dans la liste des espaces de dépôt, identifier les modèles
