@@ -253,7 +253,7 @@ export default Vue.extend({
           ctrl_id: control.id,
         }
 
-        if (control.is_model) {
+        if (control.is_model && this.accessType === 'demandeur') {
           controlMenu.badge = {
             icon: 'fas fa-thumbtack',
             class: `fas fa-thumbtack ${control.is_pinned ? '' : 'unpinned'}`,
