@@ -74,6 +74,23 @@ class SoftDeletedAdmin(object):
     is_active.short_description = "active"
 
     def get_list_display(self, request):
+        return super().get_list_display(request) + ( 'deleted_at', 'is_active')
+
+    def get_readonly_fields(self, request, obj=None):
+        return super().get_readonly_fields(request, obj) + ('is_deleted', 'deleted_at',)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+class SoftDeletedAdminControle(object):
+    actions = [soft_delete, undelete]
+
+    def is_active(self, instance):
+        return not instance.is_deleted
+    is_active.boolean = True
+    is_active.short_description = "active"
+
+    def get_list_display(self, request):
         return super().get_list_display(request) + ('is_model', 'deleted_at', 'is_active')
 
     def get_readonly_fields(self, request, obj=None):
