@@ -1,6 +1,10 @@
 from functools import partial
 
 import django.dispatch
+import os
+import magic
+from django.conf import settings
+from django.http import HttpResponseForbidden
 from control.serializers import ControlSerializer, ControlListSerializer
 from django.http import HttpResponse
 from django.db import connection
@@ -9,7 +13,8 @@ from django.core.files import File
 from django.db.models import Q
 from rest_framework import (decorators, generics, mixins, serializers, status,
                             viewsets)
-from rest_framework.exceptions import ParseError, PermissionDenied
+from rest_framework.exceptions import ParseError, PermissionDenied, ValidationError
+
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 
@@ -207,13 +212,52 @@ class QuestionnaireFileViewSet(mixins.DestroyModelMixin,
         queryset = QuestionnaireFile.objects.filter(
             questionnaire__in=self.request.user.profile.questionnaires)
         return queryset
+    
+    def file_extension_is_valid(self, extension):
+        
+        split_extensions = extension.split(".")
+        if len(split_extensions) > 2: 
+            return False
+        normalized_extension = f".{split_extensions[-1].lower()}"
+        return normalized_extension not in settings.UPLOAD_FILE_EXTENSION_BLACKLIST
 
+    def file_mime_type_is_valid(self, mime_type):
+        blacklist = settings.UPLOAD_FILE_MIME_TYPE_BLACKLIST
+        if any(match.lower() in mime_type.lower() for match in blacklist):
+            return False
+        return True
+    
     def perform_create(self, serializer):
         questionnaire = serializer.validated_data['questionnaire']
-        # Before creating the QuestionFile, let's check that permission are ok for
-        # the associated Question object.
+
         self.check_object_permissions(self.request, questionnaire)
-        serializer.save(file=self.request.data.get('file'))
+
+        files = self.request.FILES.getlist('file')
+        if len(files) > 1:
+            raise ValidationError("Le téléchargement de plusieurs fichiers via un seul champ est interdit.")
+
+        if any(header.lower() in ['x-infection-found', 'x-virus-name'] for header in self.request.headers):
+            raise ValidationError(
+                "Ce fichier a été notifié comme contenant un virus, merci de vérifier celui-ci avant de le déposer à nouveau."
+            )
+
+        file = files[0] if files else None
+
+        file_extension = os.path.splitext(file.name)[1]
+        if not self.file_extension_is_valid(file_extension):
+            raise ValidationError(f"Cette extension de fichier n'est pas autorisée : {file_extension}")
+
+        mime_type = magic.from_buffer(file.read(2048), mime=True)
+        if not self.file_mime_type_is_valid(mime_type):
+           raise ValidationError(f"Ce type de fichier n'est pas autorisé : {mime_type}")
+
+        """MAX_SIZE_BYTES = 1048576 * settings.UPLOAD_FILE_MAX_SIZE_MB
+        if file.size > MAX_SIZE_BYTES:
+            raise ValidationError(
+                f"La taille du fichier dépasse la limite autorisée de {settings.UPLOAD_FILE_MAX_SIZE_MB} Mo."
+            )
+        """
+        serializer.save(file=file)
 
 
 class ResponseFileTrash(mixins.UpdateModelMixin, generics.GenericAPIView):

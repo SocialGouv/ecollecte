@@ -39,14 +39,15 @@
               <div>{{ file.author.first_name }} {{ file.author.last_name }}</div>
             </td>
             <td v-if="isAudited">
-              <button data-toggle="modal"
-                      :data-target="'#trash-confirm-modal-' + file.id"
-                      class="fe fe-trash-2 btn btn-outline-primary"
+              <button
+                data-toggle="modal"
+                :data-target="'#trash-confirm-modal-' + file.id"
+                class="btn btn-outline-primary"
               >
-               <i class="fe fe-trash-2" aria-hidden="true"></i>
-              <span class="sr-only">Mettre à la corbeille</span>
+                <i class="fe fe-trash-2" aria-hidden="true"></i>
+                <span class="sr-only">Mettre à la corbeille</span>
               </button>
-            </td>
+          </td>
           </tr>
         </tbody>
       </table>

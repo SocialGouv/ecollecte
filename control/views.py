@@ -222,10 +222,12 @@ class UploadResponseFile(LoginRequiredMixin, CreateView):
         action.send(**action_details)
 
     def file_extension_is_valid(self, extension):
-        blacklist = settings.UPLOAD_FILE_EXTENSION_BLACKLIST
-        if any(match.lower() == extension.lower() for match in blacklist):
+        
+        split_extensions = extension.split(".")
+        if len(split_extensions) > 2: 
             return False
-        return True
+        normalized_extension = f".{split_extensions[-1].lower()}"
+        return normalized_extension not in settings.UPLOAD_FILE_EXTENSION_BLACKLIST
 
     def file_mime_type_is_valid(self, mime_type):
         blacklist = settings.UPLOAD_FILE_MIME_TYPE_BLACKLIST
@@ -234,6 +236,12 @@ class UploadResponseFile(LoginRequiredMixin, CreateView):
         return True
 
     def form_valid(self, form):
+        
+        if isinstance(self.request.FILES.getlist('file'), list) and len(self.request.FILES.getlist('file')) > 1:
+            return HttpResponseForbidden(
+            "Le téléchargement de plusieurs fichiers via un seul champ est interdit."
+        )
+            
         if (
             "x-infection-found" in [header.lower() for header in self.request.headers]
             or "x-virus-name" in [header.lower() for header in self.request.headers]
