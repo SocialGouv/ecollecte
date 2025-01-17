@@ -75,7 +75,12 @@ export default Vue.extend({
         })
         .catch(error => {
           console.log('Error when posting questionnaire file', error)
+         if (error.response && Array.isArray(error.response.data)) {
+          this.errorMessage = error.response.data[0] ;
+        } else {
           this.errorMessage = 'La pièce jointe n\'a pu être sauvée.'
+        }
+          
         })
     },
   },

@@ -75,7 +75,12 @@ export default Vue.extend({
         })
         .catch(error => {
           console.log('Error when posting question file', error)
-          this.errorMessage = 'L\'annexe n\'a pu être sauvée.'
+           if (error.response && Array.isArray(error.response.data)) {
+            this.errorMessage = error.response.data[0] ;
+          } else {
+            this.errorMessage = 'L\'annexe n\'a pu être sauvée.'
+          }
+          
         })
     },
   },

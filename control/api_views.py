@@ -185,6 +185,20 @@ class QuestionFileViewSet(mixins.DestroyModelMixin,
     filterset_fields = ('question',)
     permission_classes = (ControlDemandeurAccess, ControlIsNotDeleted, QuestionnaireIsDraft)
 
+    def file_extension_is_valid(self, extension):
+        
+        split_extensions = extension.split(".")
+        if len(split_extensions) > 2: 
+            return False
+        normalized_extension = f".{split_extensions[-1].lower()}"
+        return normalized_extension not in settings.UPLOAD_FILE_EXTENSION_BLACKLIST
+
+    def file_mime_type_is_valid(self, mime_type):
+        blacklist = settings.UPLOAD_FILE_MIME_TYPE_BLACKLIST
+        if any(match.lower() in mime_type.lower() for match in blacklist):
+            return False
+        return True
+    
     def get_queryset(self):
         queryset = QuestionFile.objects.filter(
             Q(question__theme__questionnaire__control__is_deleted=False) &
@@ -197,7 +211,27 @@ class QuestionFileViewSet(mixins.DestroyModelMixin,
         # Before creating the QuestionFile, let's check that permission are ok for
         # the associated Question object.
         self.check_object_permissions(self.request, question)
-        serializer.save(file=self.request.data.get('file'))
+        files = self.request.FILES.getlist('file')
+        if len(files) > 1:
+            raise ValidationError("Le téléchargement de plusieurs fichiers via un seul champ est interdit.")
+
+        if any(header.lower() in ['x-infection-found', 'x-virus-name'] for header in self.request.headers):
+            raise ValidationError(
+                "Ce fichier a été notifié comme contenant un virus, merci de vérifier celui-ci avant de le déposer à nouveau."
+            )
+
+        file = files[0] if files else None
+
+        file_extension = os.path.splitext(file.name)[1]
+        if not self.file_extension_is_valid(file_extension):
+            raise ValidationError(f"Cette extension de fichier n'est pas autorisée : {file_extension}")
+
+        mime_type = magic.from_buffer(file.read(2048), mime=True)
+        if not self.file_mime_type_is_valid(mime_type):
+           raise ValidationError(f"Ce type de fichier n'est pas autorisé : {mime_type}")
+
+
+        serializer.save(file=file)
 
 class QuestionnaireFileViewSet(mixins.DestroyModelMixin,
                           mixins.ListModelMixin,
