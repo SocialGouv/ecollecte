@@ -10,14 +10,15 @@
             method="post"
 
             enctype="multipart/form-data"
-            :id="'dropzone-area-' + questionId ">
+            :id="'dropzone-area-' + questionId "
+            :ref="'dropzoneArea' + questionId">
         <input type="hidden" name="csrfmiddlewaretoken" :value="csrftoken">
         <div class="dz-message" data-dz-message>
           <button type="button" class="btn">Cliquer ou glisser-déposer vos fichiers.</button>
         </div>
         <input type="hidden" id="idQuestionId" name="question_id" :value="questionId" />
         <div class="fallback">
-          <input name="file" type="file" multiple />
+          <input name="file" type="file"/>
         </div>
       </form>
       <div class="text-right">
@@ -93,6 +94,8 @@ export default Vue.extend({
     Dropzone.options['dropzoneArea' + this.questionId] = {
       addRemoveLinks: true,
       timeout: UPLOAD_TIMEOUT_MS,
+      maxFiles: 1,
+      //acceptedFiles: '.jpg,.png,.pdf,.docx,.xls,.xlsx',
       init: function() {
         this.on('success', successCallback)
         this.on('error', errorCallback)
@@ -156,6 +159,13 @@ export default Vue.extend({
     dropzoneSuccessCallback: function(file) {
       clearCache()
       this.styleSuccess(file)
+      if (this.$refs['dropzoneArea' + this.questionId]) {
+        const dropzoneInstance = Dropzone.forElement(
+          this.$refs['dropzoneArea' + this.questionId]
+        );
+      dropzoneInstance.removeAllFiles(true); 
+      }
+
       this.fetchQuestionData().then(responseFiles => {
         EventBus.$emit('response-files-updated-' + this.questionId, responseFiles)
       })

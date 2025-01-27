@@ -251,6 +251,9 @@ export default Vue.extend({
           href: backend['control-detail'](control.id),
           title: makeControlTitle(control),
           ctrl_id: control.id,
+           attributes: {
+            title: this.accessType === 'demandeur' && control.is_model ? 'Espace de dépôt modèle' : ''
+          }
         }
 
         if (control.is_model && this.accessType === 'demandeur') {
@@ -259,7 +262,8 @@ export default Vue.extend({
             class: `fas fa-thumbtack ${control.is_pinned ? '' : 'unpinned'}`,
             attributes: {
               role: 'img',
-              'aria-label': 'épinglé'
+              'aria-label': 'épinglé',
+              'title': control.is_pinned ? 'épinglé' : 'épingler cet espace'
             },
             
           };
